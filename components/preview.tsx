@@ -7,9 +7,10 @@ import { HugeiconsShareIcon } from "@/components/icons/share-icon";
 type PreviewProps = {
   url: string;
   priority?: boolean;
+  onOpen?: () => void;
 };
 
-export function Preview({ url, priority }: PreviewProps) {
+export function Preview({ url, priority, onOpen }: PreviewProps) {
   if (!url || url.trim().length === 0) {
     // do not render broken <img>, avoids the empty src errors
     return null;
@@ -17,7 +18,11 @@ export function Preview({ url, priority }: PreviewProps) {
 
   return (
     <div className="pt-[50px] pb-[50px]">
-      <div className="rounded-xl bg-card p-2 shadow-xl">
+      <button
+        className="block w-full cursor-zoom-in rounded-xl bg-card p-2 shadow-xl"
+        onClick={onOpen}
+        type="button"
+      >
         <Image
           alt={url}
           className="aspect-square w-full rounded-md object-cover"
@@ -27,7 +32,7 @@ export function Preview({ url, priority }: PreviewProps) {
           src={url}
           width={630}
         />
-      </div>
+      </button>
       <div className="flex items-center justify-center gap-4 px-1 pt-3 text-muted-foreground">
         <HugeiconsDownloadIcon className="cursor-pointer" size={20} />
         <HugeiconsShareIcon className="cursor-pointer" size={20} />

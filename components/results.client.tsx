@@ -2,8 +2,10 @@
 "use client";
 
 import { ImageIcon } from "lucide-react";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 import { search } from "@/app/actions/search";
 import { Preview } from "./preview";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "./ui/empty";
@@ -31,6 +33,8 @@ export function ResultsClient({ initialData }: Props) {
     }
   }, [state]);
 
+  const [lightboxIndex, setLightboxIndex] = useState(-1);
+
   const isSearching = "data" in state && state.data.length > 0;
   const items = (isSearching ? state.data : initialData).slice(0, VISIBLE_COUNT);
   const hasImages = items.length > 0;
@@ -42,6 +46,7 @@ export function ResultsClient({ initialData }: Props) {
           {items.map((item, index) => (
             <Preview
               key={item.id}
+              onOpen={() => setLightboxIndex(index)}
               priority={index < PRIORITY_COUNT}
               url={item.url}
             />
@@ -62,6 +67,13 @@ export function ResultsClient({ initialData }: Props) {
           </EmptyHeader>
         </Empty>
       )}
+
+      <Lightbox
+        close={() => setLightboxIndex(-1)}
+        index={lightboxIndex}
+        open={lightboxIndex >= 0}
+        slides={items.map((item) => ({ src: item.url }))}
+      />
     </>
   );
 }

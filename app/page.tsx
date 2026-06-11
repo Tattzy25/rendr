@@ -24,7 +24,7 @@ const ImagesSkeleton = () => (
 
 const Home = () => (
   <div className="relative min-h-screen rounded-[24px]">
-    <div className="relative w-full py-8">
+    <div className="relative w-full pt-8 pb-0">
       <Suspense fallback={<ImagesSkeleton />}>
         <Results />
       </Suspense>
