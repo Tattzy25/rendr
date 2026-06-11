@@ -1,14 +1,12 @@
 // components/results.client.tsx
 "use client";
 
-import { ArrowLeftIcon, ImageIcon, Loader2Icon } from "lucide-react";
+import { ImageIcon } from "lucide-react";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { search } from "@/app/actions/search";
 import { Preview } from "./preview";
-import { Button } from "./ui/button";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "./ui/empty";
-import { Input } from "./ui/input";
 import type { ImageItem } from "./results";
 
 type State = { data: ImageItem[] } | { error: string };
@@ -18,9 +16,11 @@ type Props = {
 };
 
 const PRIORITY_COUNT = 12;
+// 1 row × 4 columns (md:columns-4) = 4 images
+const VISIBLE_COUNT = 4;
 
 export function ResultsClient({ initialData }: Props) {
-  const [state, formAction, isPending] = useActionState<State, FormData>(
+  const [state, _formAction, _isPending] = useActionState<State, FormData>(
     search,
     { data: [] },
   );
@@ -32,7 +32,7 @@ export function ResultsClient({ initialData }: Props) {
   }, [state]);
 
   const isSearching = "data" in state && state.data.length > 0;
-  const items = isSearching ? state.data : initialData;
+  const items = (isSearching ? state.data : initialData).slice(0, VISIBLE_COUNT);
   const hasImages = items.length > 0;
 
   return (
@@ -62,48 +62,6 @@ export function ResultsClient({ initialData }: Props) {
           </EmptyHeader>
         </Empty>
       )}
-
-      <form
-        action={formAction}
-        className="-translate-x-1/2 fixed bottom-8 left-1/2 flex w-full max-w-sm items-center gap-1 rounded-full bg-background p-1 shadow-xl sm:max-w-lg"
-      >
-        {isSearching && (
-          <Button
-            className="shrink-0 rounded-full"
-            disabled={isPending}
-            onClick={() => window.location.reload()}
-            size="icon"
-            type="button"
-            variant="ghost"
-          >
-            <ArrowLeftIcon className="size-4" />
-          </Button>
-        )}
-
-        <Input
-          className="w-full rounded-full border-none bg-secondary shadow-none outline-none"
-          disabled={isPending || !hasImages}
-          id="search"
-          name="search"
-          placeholder="Search by description"
-          required
-        />
-
-        {isPending ? (
-          <Button className="shrink-0" disabled size="icon" variant="ghost">
-            <Loader2Icon className="size-4 animate-spin" />
-          </Button>
-        ) : (
-          <Button
-            className="shrink-0 rounded-full"
-            size="icon"
-            type="submit"
-            variant="ghost"
-          >
-            <ImageIcon className="size-4" />
-          </Button>
-        )}
-      </form>
     </>
   );
 }
